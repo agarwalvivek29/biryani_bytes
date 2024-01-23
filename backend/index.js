@@ -9,6 +9,13 @@ const port = 3000;
 const app = express();
 
 app.use(bodyParser.json());
+
+//Global Error Handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Internal Server Error');
+});
+
 app.use('/auth',authRouter);
 app.use('/create',createRouter);
 app.use('/aicustomiser',aiRouter);
@@ -17,6 +24,9 @@ app.use('/',useRouter);
 app.get('/',(req,res)=>{
     res.send("welcome to biryani bytes");
 })
+
+
+  
 app.listen(port, '0.0.0.0', ()=>{
     console.log(`Server is listening on port ${port}`);
 })

@@ -4,14 +4,8 @@ const mongoose = require('mongoose');
 const router = Router();
 
 router.get('/discover',async (req,res)=>{
-    try{
-        const channels = await Channel.find();
-        res.send(channels);
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).send("INternal Server Error");
-    }
+    const channels = await Channel.find();
+    res.send(channels);
 })
 
 router.put('/:channel',async(req,res)=>{
@@ -21,14 +15,14 @@ router.put('/:channel',async(req,res)=>{
     const channel = await Channel.findOne({
         "title" : req.params.channel
     })
-    if(channel){
-        user.channels_joined.push(channel._id);
-        await user.save();
-        res.send('Channel joined successfully')
+    
+    if(! channel){
+        return res.status(404).send("Channel not found");
     }
-    else{
-        res.status(404).send("Channel not found");
-    }
+
+    user.channels_joined.push(channel._id);
+    await user.save();
+    res.send('Channel joined successfully')
 })
 
 router.get('/channels',async (req,res)=>{
@@ -39,24 +33,16 @@ router.get('/channels',async (req,res)=>{
 })
 
 router.get('/:channel/products',async (req,res)=>{
-    try{
-        const channel = await Channel.findOne({
-            "title" : req.params.channel
-        })
-        if(! channel){
-            return res.status(404).send("Channel doesn't exist");
-        }
-        const objectIdArray = channel.products;
-        const objectIdInstances = objectIdArray.map(id => new mongoose.Types.ObjectId(id));
-        const products = await Product.find({ _id: { $in: objectIdInstances } });
-        res.send(products);
+    const channel = await Channel.findOne({
+        "title" : req.params.channel
+    })
+    if(! channel){
+        return res.status(404).send("Channel doesn't exist");
     }
-    catch(error){
-        console.log(error)
-        res.status(500).send("Internal server Error");
-    }
+    const objectIdArray = channel.products;
+    const objectIdInstances = objectIdArray.map(id => new mongoose.Types.ObjectId(id));
+    const products = await Product.find({ _id: { $in: objectIdInstances } });
+    res.send(products);
 })
-
-
 
 module.exports = router;

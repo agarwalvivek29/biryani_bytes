@@ -40,32 +40,26 @@ router.post('/',async (req,res)=>{
     //     res.send(response.data);
     // }
 
-    try{
-        const response = await axios.post("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",{
-            "inputs" : req.body.prompt
-        },  
-        {
-            headers: {
-                Authorization: "Bearer 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"
-            },
-            responseType: 'arraybuffer'
-        });
-        
-        if (response.status === 200) {
-            const imageData = Buffer.from(response.data, 'binary');
-            const filePath = './image.jpg';
+    const response = await axios.post("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",{
+        "inputs" : req.body.prompt
+    },  
+    {
+        headers: {
+            Authorization: `Bearer ${process.env.HF_APIKEY}`
+        },
+        responseType: 'arraybuffer'
+    });
+    
+    if (response.status === 200) {
+        const imageData = Buffer.from(response.data, 'binary');
+        const filePath = `./image_generations/${prompt}.jpg`;
 
-            fs.writeFileSync(filePath, imageData);
-            res.send("Image saved successfully");
-        }
-        else{
-            res.send("internal Error")
-        }
+        fs.writeFileSync(filePath, imageData);
+        res.send("Image saved successfully");
     }
-    catch(error){
-        console.log(error);
-        res.status(500).send("Internal Server Error");
+    else{
+        throw error
     }
-})
+});
 
 module.exports = router;
