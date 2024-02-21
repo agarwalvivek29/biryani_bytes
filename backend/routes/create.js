@@ -4,27 +4,34 @@ const mongoose = require('mongoose')
 const router = Router();
 
 router.post('/channel', async (req,res)=>{
-    const newChannel = new Channel({
-        "title" : req.body.title,
-        "image" : req.body.image
-    })
-
-    await newChannel.save();
     const user = await User.findOne({
         "username" : req.headers.username
     })
-    console.log(user);
-    if(user){
-        user.channels_created.push(newChannel._id);
-        await user.save();
+    if(! user){
+        res.status(405).send("Invalid Request")
     }
+
+    const newChannel = new Channel({
+        "title" : req.body.title,
+        "image" : req.body.image,
+        "creator" : user._id
+    })
+    user.channels_created.push(newChannel._id);
+
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+        await newChannel.save();
+        await user.save();
+    })
+    session.endSession();
+
+    console.log(user);
     res.send(`${req.body.title} : Channel created successfully`);
 })
 
 router.post('/:channel/product', async (req,res)=>{
     const newProduct = new Product(req.body);
     
-    await newProduct.save();
     const foundchannel = await Channel.findOne({
         "title" : req.params.channel
     });
@@ -34,7 +41,13 @@ router.post('/:channel/product', async (req,res)=>{
     }
 
     foundchannel.products.push(newProduct._id);
-    await foundchannel.save();
+
+    const session = await mongoose.startSession();
+    await session.withTransaction(async () => {
+        await newProduct.save();
+        await foundchannel.save();    
+    })
+    session.endSession();
     res.send("Product added to channel successfully");    
 })
 

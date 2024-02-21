@@ -8,51 +8,105 @@ const productSchema = new mongoose.Schema({
     "title" : String,
     "price" : Number,
     "image" : String,
+    "description" : String,
     "reviews" : [{
-        "user" : String,
+        "user" : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'User'
+        },
         "review" : String
-    }]
+    }],
+    "likes" : {
+        type : Number,
+        default : 0
+    },
+    "channel" : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Channel'
+    }
 });
-
-const Product = mongoose.model('Product',productSchema);
 
 const channelSchema = new mongoose.Schema({
     "title" : String,
     "image" : String,
+    "description" : String,
     "products" : [
         {
             type : mongoose.Schema.Types.ObjectId,
             ref : 'Product'
         }
-    ]
-});
-
-const Channel = mongoose.model('Channel',channelSchema);
-
-const userSchema = new mongoose.Schema({
-    "username" : String,
-    "password" : String,
-    "e-mail" : String,
-    "channels_joined" : [
-        {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'Channel'
-        }
     ],
-    "Orders Recieved" : [Object],
-    "Order_History" : [{
-        product : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'Channel'
-        },
-        order_date : Date
-    }],
-    "channels_created" : [{
+    "creator" : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Channel'
+        ref : 'User'
+    },
+    "subscribers" : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        default : 0
     }]
 });
 
-const User = mongoose.model('User',userSchema);
+const userSchema = new mongoose.Schema({
+    "username" : {
+        type : String,
+        unique : true
+    },
+    "password" : String,
+    "email" : String,
+    "phone" : String,
+    "image" : {
+        type : String,
+        default : "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Noun_Robot_1749584.svg/640px-Noun_Robot_1749584.svg.png"
+    },
+    "user" : {
+        "channels" : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'Channel'
+        }],
+        "orders" : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'Order'
+        }],
+        "saved" : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'Product'
+        }]
+    },
+    "creator" : {
+        "channels" : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'Channel'
+        }],
+        "orders" : [{
+            type : mongoose.Schema.Types.ObjectId,
+            ref : 'Order'
+        }]
+    }
+});
 
-module.exports = { User, Product, Channel };
+const orderSchema = new mongoose.Schema({
+    "date" : Date,
+    "product" : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Product',
+        required : true
+    },
+    "buyer" : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        required : true
+    },
+    "seller" : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        required : true
+    }
+});
+
+const Channel = mongoose.model('Channel',channelSchema);
+const Product = mongoose.model('Product',productSchema);
+const User = mongoose.model('User',userSchema);
+const Order = mongoose.model('Order',orderSchema);
+
+module.exports = { User, Product, Channel, Order };

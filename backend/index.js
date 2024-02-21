@@ -4,16 +4,20 @@ const authRouter = require('./routes/auth');
 const createRouter = require('./routes/create');
 const useRouter = require('./routes/use');
 const aiRouter = require('./routes/custom');
+const cors = require('cors');
 const port = 3000;
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 
 //Global Error Handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send({
+        'error' : err
+    });
 });
 
 app.use('/auth',authRouter);

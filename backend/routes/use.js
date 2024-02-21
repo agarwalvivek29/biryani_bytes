@@ -2,6 +2,27 @@ const { Router } = require('express');
 const { Channel, User, Product } = require('../db');
 const mongoose = require('mongoose');
 const router = Router();
+const {authenticate} = require('../middlewares/auth');
+
+router.get('/user',authenticate, async(req,res)=>{
+    console.log('User details accessed',req.body.username);
+    const user = await User.findOne({
+        "username" : req.body.username
+    });
+    res.send(user);
+})
+
+router.get('/channel',async(req,res)=>{
+    console.log('Channel details sent');
+    const channels = await Channel.find();
+    res.send(channels);
+})
+
+router.get('/product',async(req,res)=>{
+    console.log('Product details sent');
+    const products = await Product.find();
+    res.send(products);
+});
 
 router.get('/discover',async (req,res)=>{
     const channels = await Channel.find();
