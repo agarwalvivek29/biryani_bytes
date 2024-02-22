@@ -8,11 +8,13 @@ const { User } = require('../db');
 
 const router = Router();
 
-router.post('/username_avl', async(req,res)=>{
+router.get('/username_avl/:username', async(req,res)=>{
     const userExists = await User.findOne({
-        "username" : req.body.username
+        "username" : req.params.username
     })
-    res.send(`${userExists ? false : true}`)
+    console.log(req.params.username,userExists);
+    res.send(userExists ? false : true)
+    
 })
 
 router.post('/signup', async (req,res)=>{

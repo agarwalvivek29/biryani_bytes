@@ -28,7 +28,12 @@ import { Product } from './pages/Product'
             <Route path='/auth' element={<AuthPage />}/>
             <Route path='/shop' element={<Product />}/>
             {cookie ? 
-            <Route path='/' element={<LandingPage />} /> : <Route path='/' element={<Navigate to='/auth' />} /> }
+            <Route path='/' element={<LandingPage />} />
+            : <Route path='/' element={<Navigate to='/auth' />} />}
+            {cookie ? 
+            <Route path='/dashboard' element={<CreateChannel />} />
+            : <Route path='/dashboard' element={<Navigate to='/auth' />} />}
+
           </Routes>
         </BrowserRouter>
       </RecoilRoot>

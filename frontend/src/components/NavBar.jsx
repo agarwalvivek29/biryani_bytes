@@ -14,7 +14,7 @@ function NavButton({title}){
 
 function DropDownButton({title}){
     return (
-        <div className="absolute w-full text-center bg-white shadow-md rounded-md p-3">
+        <div className="font-medium font-roboto absolute w-full text-center bg-white shadow-md rounded-md p-3">
             {title}
         </div>
     )
