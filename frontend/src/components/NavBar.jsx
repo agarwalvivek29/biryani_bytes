@@ -14,54 +14,49 @@ function NavButton({title}){
 
 function DropDownButton({title}){
     return (
-        <div className="font-medium font-roboto absolute w-full text-center bg-white shadow-md rounded-md p-3">
-            {title}
+        <div className="font-medium text-lg font-roboto absolute w-full text-center bg-white shadow-md rounded-md p-3 cursor-pointer hover:font-bold">
+            <div>
+                {title}
+            </div>
         </div>
     )
 }
 
-function Profile({title,imglink}){
-
-    const [hidden,setHidden] = useState(true)
-
-    function show(){setHidden(false)};
-    function hide(){setHidden(true)};
-
-    return(
-        <div onMouseEnter={show} onMouseLeave={hide} className="">
-            <div className="font-medium font-roboto p-3 cursor-pointer text-lg hover:font-bold flex items-center">
-                <img src={imglink} className="w-9 h-9 m-1 rounded-md" />{title}
-            </div>
-            {hidden ? 
-                '' : <DropDownButton title='Dashboard' />
-            }
-        </div>
-    )   
+function handleLogout(){
+    console.log('fn call logout')
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=None;";
+    console.log(document.cookie);
 }
 
-// function Profile({ title, imglink }) {
-//     const [showDropdown, setShowDropdown] = useState(false);
+function Profile({ title, imglink }) {
+    const [showDropdown, setShowDropdown] = useState(false);
+    const navigate = useNavigate();
   
-//     const handleMouseOver = () => {
-//       setShowDropdown(true);
-//     };
+    const handleMouseOver = () => {
+      setShowDropdown(true);
+    };
   
-//     const handleMouseLeave = () => {
-//       setShowDropdown(false);
-//     };
+    const handleMouseLeave = () => {
+      setShowDropdown(false);
+    };
   
-//     return (
-//       <div className="relative" onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
-//         <div className="font-medium font-roboto p-3 cursor-pointer text-lg hover:font-bold flex items-center">
-//           <img src={imglink} className="w-9 h-9 m-1 rounded-md" alt={title} />
-//           {title}
-//         </div>
-//         {showDropdown && (
-//             <DropDownButton title='Dashboard'/>
-//         )}
-//       </div>
-//     );
-//   }
+    return (
+      <div className="relative" onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
+        <div className="font-medium font-roboto p-3 cursor-pointer text-lg hover:font-bold flex items-center">
+          <img src={imglink} className="w-9 h-9 m-1 rounded-md" alt={title} />
+          {title}
+        </div>
+        {showDropdown && (
+            <DropDownButton title='Logout' onClick={()=>{
+                handleLogout();
+                navigate('/', ()=>{
+                    console.log('navCalled')
+                })
+            }}/>
+        )}
+      </div>
+    )
+}
 
 export function Navbar(){
     const user = useRecoilValue(userAtom);
@@ -97,7 +92,10 @@ export function Navbar(){
                     </div>
                     <div >
                         {user.username ? 
-                        <Profile title={user.username} imglink={user.image}/> : <NavButton title='SignUp | SignIn' onClick={()=> handleRouting('auth')}/>}
+                        <Profile title={user.username} imglink={user.image}/> : 
+                        <div onClick={()=>handleRouting('auth')}>
+                            <NavButton title='SignUp | SignIn' />
+                        </div>}
                     </div>
                 </div>
             </div>
