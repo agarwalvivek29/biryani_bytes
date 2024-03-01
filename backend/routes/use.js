@@ -29,21 +29,23 @@ router.get('/discover',async (req,res)=>{
     res.send(channels);
 })
 
-router.put('/:channel',async(req,res)=>{
+router.put('/:channelid', async(req,res)=>{
     const user = await User.findOne({
-        "username" : req.headers.username 
+        "username" : req.body.username 
     })
-    const channel = await Channel.findOne({
-        "title" : req.params.channel
-    })
+    console.log(user);
+    const channelid = req.params.channelid;
     
-    if(! channel){
-        return res.status(404).send("Channel not found");
+    if(user.user.channels.includes(channelid)){
+        const index = user.user.channels.indexOf(channelid);
+        user.user.channels.pop(index);
+    }
+    else{
+        user.user.channels.push(channelid)
     }
 
-    user.channels_joined.push(channel._id);
     await user.save();
-    res.send('Channel joined successfully')
+    res.send('Channel joined / left successfully')
 })
 
 router.get('/channels',async (req,res)=>{
@@ -64,6 +66,45 @@ router.get('/:channel/products',async (req,res)=>{
     const objectIdInstances = objectIdArray.map(id => new mongoose.Types.ObjectId(id));
     const products = await Product.find({ _id: { $in: objectIdInstances } });
     res.send(products);
+})
+
+router.post('/addtocart/:productid',async(req,res)=>{
+    try{
+        const user = await User.findOne({
+            "username" : req.body.username
+        })
+    
+        user.cart.push(req.params.productid);
+        user.save();
+        console.log(`${req.params.productid} added to ${req.body.username}'s cart successfully`);
+        res.send(user.cart);
+    }
+    catch(e){
+        res.send({
+            "error" : true,
+            "err" : e
+        })
+    }
+})
+
+router.post('/removefromcart/:productid',async(req,res)=>{
+    try{
+        const user = await User.findOne({
+            "username" : req.body.username
+        })
+
+        const index = user.cart.indexOf(req.params.productid)
+        user.cart.splice(index,1);
+        user.save();
+        console.log(`${req.params.productid} removed from ${req.body.username}'s cart successfully`)
+        res.send(user.cart);
+    }
+    catch(e){
+        res.send({
+            "error" : true,
+            "err" : e
+        })
+    }
 })
 
 module.exports = router;
