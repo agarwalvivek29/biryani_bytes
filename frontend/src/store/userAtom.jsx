@@ -16,3 +16,8 @@ export const productAtom = atom({
     key : 'productAtom',
     default : []
 });
+
+export const cartAtom = atom({
+    key : "cartAtom",
+    default : []
+})

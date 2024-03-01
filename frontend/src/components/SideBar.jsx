@@ -20,7 +20,8 @@ export function SideBar(){
     return(
         <div className="bg-white">
             {channels.map((channel)=>{
-                return <SideBarEle channel={channel} />
+                return <SideBarEle key={channel._id}
+                channel={channel} />
             })}
         </div>
     )

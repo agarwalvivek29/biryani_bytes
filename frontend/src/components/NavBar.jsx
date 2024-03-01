@@ -1,8 +1,9 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Icon } from "./Icons";
 import { userAtom } from "../store/userAtom";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { cookieAtom } from "../store/cookieAtom";
 
 function NavButton({title}){
     return(
@@ -12,21 +13,40 @@ function NavButton({title}){
     )
 }
 
-function DropDownButton({title}){
+function DropDownButton({title,cb}){
     return (
         <div className="font-medium text-lg font-roboto absolute w-full text-center bg-white shadow-md rounded-md p-3 cursor-pointer hover:font-bold">
-            <div>
+            <div onClick={cb}>
                 {title}
             </div>
         </div>
     )
 }
 
-function handleLogout(){
-    console.log('fn call logout')
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=None;";
-    console.log(document.cookie);
+function LogoutBtn(){
+    const navigate = useNavigate();
+    const [user,setUser] = useRecoilState(userAtom);
+    const setCookie = useSetRecoilState(cookieAtom);
+
+    function handleLogout(){
+        console.log('fn call logout')
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=None;";
+        
+        setCookie(false);
+    }
+
+    return(
+        <DropDownButton title='Logout' cb={function(){
+            handleLogout();
+            setUser({})
+            navigate('/', ()=>{
+                console.log('navCalled')
+            })
+        }}/>
+    )
 }
+
+
 
 function Profile({ title, imglink }) {
     const [showDropdown, setShowDropdown] = useState(false);
@@ -39,7 +59,7 @@ function Profile({ title, imglink }) {
     const handleMouseLeave = () => {
       setShowDropdown(false);
     };
-  
+
     return (
       <div className="relative" onMouseOver={handleMouseOver} onMouseLeave={handleMouseLeave}>
         <div className="font-medium font-roboto p-3 cursor-pointer text-lg hover:font-bold flex items-center">
@@ -47,13 +67,8 @@ function Profile({ title, imglink }) {
           {title}
         </div>
         {showDropdown && (
-            <DropDownButton title='Logout' onClick={()=>{
-                handleLogout();
-                navigate('/', ()=>{
-                    console.log('navCalled')
-                })
-            }}/>
-        )}
+            <LogoutBtn />
+        )}  
       </div>
     )
 }
@@ -81,22 +96,26 @@ export function Navbar(){
                     <Icon who='logo' css='w-10 m-4' />
                 </div>
                 <div className="flex items-center">
-                    <div onClick={()=>handleRouting('shop')}>
+                    {/* <div onClick={()=>handleRouting('shop')}>
                         <NavButton title='Home' />
-                    </div>
+                    </div> */}
                     <div onClick={()=>handleRouting('')}>
                         <NavButton title='Discover'/>
                     </div>
-                    <div>
+                    <div onClick={()=>handleRouting('shop')}>
                         <NavButton title='Trending'/>
                     </div>
                     <div >
-                        {user.username ? 
+                        {user.username ?
                         <Profile title={user.username} imglink={user.image}/> : 
                         <div onClick={()=>handleRouting('auth')}>
                             <NavButton title='SignUp | SignIn' />
                         </div>}
                     </div>
+                    {user.username ? 
+                    <div onClick={()=>handleRouting('cart')}>
+                        <NavButton title='Cart' />
+                    </div>: ''}
                 </div>
             </div>
         </div>

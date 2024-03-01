@@ -3,8 +3,9 @@ import { useRecoilValue, useSetRecoilState , useRecoilState} from 'recoil'
 import { signupAtom, signinAtom } from "../store/authAtom"
 import { Icon } from "./Icons"
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { useState } from "react";
+import { cookieAtom } from "../store/cookieAtom";
 
 const textfield_style = 'm-1 p-3 rounded-sm w-80'
 const button_Style = 'm-2 center shadow p-4 rounded-md w-40 text-xl font-medium'
@@ -114,6 +115,8 @@ export function SignUp(){
 
     const [signupState,setSignupState] = useRecoilState(signupAtom);
 
+    const setCookie = useSetRecoilState(cookieAtom);
+
     const [warnings,setWarnings] = useState({
         username : '* This is a required field',
         password : '* This is a required field',
@@ -133,11 +136,12 @@ export function SignUp(){
         document.cookie = `token=${token}; Secure; SameSite=None;`
         if(token){
             alert(`${signupState.username} registered successfully`);
+            setCookie(true);
         }
         else{
             alert('Internal Server Error')
         }
-        navigate('/');              
+        navigate('/');
     }
 
     return(
