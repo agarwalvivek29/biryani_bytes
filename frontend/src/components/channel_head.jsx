@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useRecoilState } from "recoil";
 import { userAtom } from "../store/userAtom";
+import axios from "axios";
+import { URL } from "../App";
 
 export function ChannelHead({channel}){
 
@@ -14,7 +16,16 @@ export function ChannelHead({channel}){
         }
     },[])
 
-    const handlesubs = ()=>{
+    async function handlesubs(){
+        try{
+            const res = await axios.put(`${URL}/${channel._id}`,{
+                "username" : user.username
+            })
+        }
+        catch(e){
+            console.log(e);
+        }
+
         if(isFollowed){
             setFollowers(prev=>{return prev-1})
         }

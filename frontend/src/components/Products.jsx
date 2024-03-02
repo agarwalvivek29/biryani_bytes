@@ -3,11 +3,12 @@ import { useRecoilState, useRecoilValue } from "recoil"
 import { cartAtom, userAtom } from "../store/userAtom"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { URL } from "../App"
 
 export async function addToCart_apicall({productid, username}){
 
     try{
-        const res = axios.post(`http://localhost:3000/addtocart/${productid}`,{
+        const res = axios.post(`${URL}/addtocart/${productid}`,{
             username
         })
         console.log(res.data);
@@ -20,7 +21,7 @@ export async function addToCart_apicall({productid, username}){
 export async function removeFromCart_apicall({productid, username}){
 
     try{
-        const res = axios.post(`http://localhost:3000/removefromcart/${productid}`,{
+        const res = axios.post(`${URL}/removefromcart/${productid}`,{
             username
         })
         console.log(res.data);
@@ -32,8 +33,14 @@ export async function removeFromCart_apicall({productid, username}){
 
 export function ProductCard({product}){
     const user = useRecoilValue(userAtom);
-    const [cart,setCart] = useRecoilState(cartAtom)
-    const [inCart, setInCart] = useState(cart.includes(product._id))
+    const [cart,setCart] = useRecoilState(cartAtom);
+    const [inCart, setInCart] = useState(false);
+
+    useEffect(()=>{
+        if(cart){
+            setInCart(cart.includes(product._id))
+        }
+    },[cart])
 
     async function addToCart(){
         setCart(prev=>[...prev, product._id])
@@ -85,12 +92,91 @@ export function ProductCard({product}){
     )
 }
 
-export function ProductArray({products}){
+export function ProductCard_2({product}){
+    const user = useRecoilValue(userAtom);
+    const [cart,setCart] = useRecoilState(cartAtom)
+    const [inCart, setInCart] = useState(false)
+
+    useEffect(()=>{
+        if(cart){
+            setInCart(cart.includes(product._id))
+        }
+    },[cart])
+
+    async function addToCart(){
+        setCart(prev=>[...prev, product._id])
+        setInCart(true)
+        await addToCart_apicall({productid : product._id, username : user.username});
+    }
+
+    const navigate = useNavigate();
+
+    console.log(product);
+
     return(
-        <div>
+        <div className="m-2 p-2 bg-slate-300 rounded-md max-w-6xl items-center cursor-pointer min-w-80 w-min h-min"
+        onClick={()=>{
+            navigate(`/product/${product._id}`)
+        }}>
+            <div className="md:max-w-80 md:max-h-80 overflow-hidden m-3 rounded-md"
+            >
+                <img src={product.image}/>
+            </div>
+            <div className="p-5">
+                <div>
+                    <div className="font-medium text-2xl p-1">
+                        {product.title}
+                    </div>
+                    <div className="hidden md:block font-thin text-sm p-1">
+                        {product.description.substring(0,40)}
+                    </div>
+                    <div className="font-medium text-2xl p-1 my-2">
+                        ₹{product.price}
+                    </div>
+                </div>
+                {/* {
+                    inCart ?
+                    <Qty productid={product._id}/>
+                    :
+                    <button className="p-3 border-2 my-2 bg-slate-400 rounded-md hover:bg-slate-600 hover:text-white hover:font-medium hover:text-lg"
+                    onClick={addToCart}
+                    >
+                        Add to Cart
+                    </button>
+                } */}
+            </div>
+        </div>
+    )
+}
+
+
+export function ProductArray({products}){
+    if(products.length==0){
+        return(
+            <div className="text-5xl w-full h-full flex-col items-center">
+                Coming Soon......
+            </div>
+        )
+    }
+    else{
+        return(
+            <div>
+                {products.map((product)=>{
+                    return(
+                        <ProductCard key={product._id} product={product}/>
+                    )                    
+                })}
+            </div>
+        )
+    }
+}
+
+export function ProductArray_2({products}){
+    return(
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product)=>{
                 return(
-                    <ProductCard key={product._id} product={product}/>
+                    <ProductCard_2 key={product._id} product={product}/>
                 )                    
             })}
         </div>

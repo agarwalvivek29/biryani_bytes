@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUpdateUser } from "../store/useUpdateUser";
 import { useEffect, useState } from "react";
-
+import { URL } from "../App";
 
 export function ChannelArray({channels, userChannels=[]}){
 
@@ -40,7 +40,7 @@ function Channel({channel, isFollowed = false}){
     async function handlesubs(){
         if(cookie){
             try{
-                const res = await axios.put(`http://localhost:3000/${channel._id}`,{
+                const res = await axios.put(`${URL}/${channel._id}`,{
                     "username" : user.username
                 })
                 var userChannels = user.user.channels.slice();
@@ -70,7 +70,7 @@ function Channel({channel, isFollowed = false}){
 
     // console.log(channel);
     return(
-        <div className="font-saira m-3 p-5 shadow-lg flex-col items-center flex justify-center rounded-md bg-slate-900 text-white cursor-pointer hover:bg-white hover:text-black">
+        <div className="m-3 p-5 shadow-lg flex-col items-center flex justify-center rounded-md bg-slate-300 text-black cursor-pointer hover:bg-white hover:text-black">
             <div className="flex-col flex items-center" onClick={()=>{
                 navigate(`/store/${channel._id}`)
             }}>
@@ -103,7 +103,7 @@ function Channel({channel, isFollowed = false}){
 //     try{
 //         const cookie = document.cookie;
 //         const token = cookie.split('=')[1];
-//         const userresponse = await axios.get(`http://localhost:3000/user`,{
+//         const userresponse = await axios.get(`${URL}/user`,{
 //             headers : {
 //                 Authorization : `Bearer ${token}`
 //             }

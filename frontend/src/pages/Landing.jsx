@@ -22,7 +22,7 @@ export function LandingPage(){
     //         try{
     //             const cookie = document.cookie;
     //             const token = cookie.split('=')[1];
-    //             const userresponse = await axios.get(`http://localhost:3000/user`,{
+    //             const userresponse = await axios.get(`${URL}/user`,{
     //                 headers : {
     //                     Authorization : `Bearer ${token}`
     //                 }
@@ -35,7 +35,7 @@ export function LandingPage(){
     //                 setCart(user.cart);
     //             }
                 
-    //             const channelresponse = await axios.get(`http://localhost:3000/channel`,{
+    //             const channelresponse = await axios.get(`${URL}/channel`,{
     //                 headers : {
     //                     Authorization : `Bearer ${token}`
     //                 }
@@ -44,7 +44,7 @@ export function LandingPage(){
     //             console.log(channel);
     //             setChannelState(channel);
                 
-    //             const productresponse = await axios.get(`http://localhost:3000/product`,{
+    //             const productresponse = await axios.get(`${URL}/product`,{
     //                 headers : {
     //                     Authorization : `Bearer ${token}`
     //                 }
@@ -76,8 +76,8 @@ export function LandingPage(){
                 <Navbar />
                 <div className="relative mb-5">
                     <div className="overflow-hidden w-full ">
-                        <img src="https://images.pexels.com/photos/36717/amazing-animal-beautiful-beautifull.jpg?auto=compress&cs=tinysrgb&w=600" 
-                        className="w-full h-40 object-cover" 
+                        <img src="https://c4.wallpaperflare.com/wallpaper/297/22/531/lake-blue-moonlight-moon-wallpaper-preview.jpg" 
+                        className="w-full h-60 object-cover" 
                         />
                     </div>
                     <div className="absolute inset-20 text-center">

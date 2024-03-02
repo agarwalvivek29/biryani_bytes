@@ -74,14 +74,14 @@ function Profile({ title, imglink }) {
 }
 
 export function Navbar(){
-    const user = useRecoilValue(userAtom);
+    const [user,setUser] = useRecoilState(userAtom);
 
     const [cookie,setCookie] = useState(true);
     useEffect(()=>{
         if(!document.cookie){
             setCookie(false);
         }
-    },[])
+    },[cookie])
 
     const navigate = useNavigate();
     

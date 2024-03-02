@@ -35,17 +35,28 @@ router.put('/:channelid', async(req,res)=>{
     })
     console.log(user);
     const channelid = req.params.channelid;
+
+    const channel = await Channel.findOne({
+        "_id" : channelid
+    })
     
     if(user.user.channels.includes(channelid)){
         const index = user.user.channels.indexOf(channelid);
         user.user.channels.pop(index);
+        channel.followers = channel.followers-1
     }
     else{
         user.user.channels.push(channelid)
+        channel.followers = channel.followers+1
     }
 
     await user.save();
+    await channel.save();
     res.send('Channel joined / left successfully')
+})
+
+router.put('/like/:productid',(req,res)=>{
+    
 })
 
 router.get('/channels',async (req,res)=>{
@@ -98,6 +109,30 @@ router.post('/removefromcart/:productid',async(req,res)=>{
         user.save();
         console.log(`${req.params.productid} removed from ${req.body.username}'s cart successfully`)
         res.send(user.cart);
+    }
+    catch(e){
+        res.send({
+            "error" : true,
+            "err" : e
+        })
+    }
+})
+
+router.post('/review/:productid',async(req,res)=>{
+    try{
+        const product = await Product.findOne({
+            "_id" : req.params.productid
+        })
+
+        product.reviews.push({
+            review : req.body.review,
+            user : req.body.user
+        })
+
+        console.log(product);
+
+        product.save();
+        res.send(product)
     }
     catch(e){
         res.send({

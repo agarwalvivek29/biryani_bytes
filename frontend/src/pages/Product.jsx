@@ -1,13 +1,14 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { Navbar } from "../components/NavBar";
-import { ProductArray } from "../components/Products";
+import { ProductArray, ProductArray_2 } from "../components/Products";
 import { SideBar } from "../components/SideBar";
 import { productAtom } from "../store/userAtom";
+import { useEffect } from "react";
 
 export function Product(){
 
-    const products = useRecoilValue(productAtom);
-
+    const [products,setProducts] = useRecoilState(productAtom);
+    
     return(
         <div className="bg-gray-100 min-h-screen">
             <Navbar />
@@ -29,7 +30,7 @@ export function Product(){
                 </div>
             </div>
             <div className="flex justify-center m-3">
-                <ProductArray products={products} />
+                <ProductArray_2 products={products} />
             </div>
         </div>
     )

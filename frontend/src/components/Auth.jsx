@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { set, z } from 'zod';
 import { useState } from "react";
 import { cookieAtom } from "../store/cookieAtom";
+import { URL } from "../App";
 
 const textfield_style = 'm-1 p-3 rounded-sm w-80'
 const button_Style = 'm-2 center shadow p-4 rounded-md w-40 text-xl font-medium'
@@ -24,7 +25,7 @@ function Warn({message = '* This is a required field',type=false}){
 async function apicall_final(props){
     try{
         console.log(props.data);
-        const response = await axios.post(`http://localhost:3000/auth/${props.endpoint}`,props.data);
+        const response = await axios.post(`${URL}/auth/${props.endpoint}`,props.data);
         console.log(response);
         return(response.data.token)
     }
@@ -36,7 +37,7 @@ async function apicall_final(props){
 
 async function apicall_username_avl(username){
     try{
-        const response = await axios.get(`http://localhost:3000/auth/username_avl/${username}`);
+        const response = await axios.get(`${URL}/auth/username_avl/${username}`);
         return response.data;
     }   
     catch(e){
@@ -46,6 +47,9 @@ async function apicall_username_avl(username){
 };
 
 export function SignIn(){
+
+    const [cookie,setCookie] = useRecoilState(cookieAtom);
+
     const [signInState,setSignInState] = useRecoilState(signinAtom);
     const [warn,setWarn] = useState(false);
     const navigate = useNavigate();
@@ -56,10 +60,14 @@ export function SignIn(){
             'username' : signInState.username,
             'password' : signInState.password
         }, endpoint: 'signin'});
-        if(!token){
-            <alert>"Login failed"</alert>
-        }
         document.cookie = `token=${token}; Secure; SameSite=None;`
+        if(token){
+            alert(`${signInState.username} logged in successfully`);
+            setCookie(document.cookie);
+        }
+        else{
+            alert('Internal Server Error')
+        }        
         navigate('/');
     }
 
@@ -111,11 +119,11 @@ export function SignUp(){
         email : z.string().email()
     });
 
+    const [cookie,setCookie] = useRecoilState(cookieAtom);
+
     const [warn,setWarn] = useState(false);
 
     const [signupState,setSignupState] = useRecoilState(signupAtom);
-
-    const setCookie = useSetRecoilState(cookieAtom);
 
     const [warnings,setWarnings] = useState({
         username : '* This is a required field',
@@ -136,7 +144,7 @@ export function SignUp(){
         document.cookie = `token=${token}; Secure; SameSite=None;`
         if(token){
             alert(`${signupState.username} registered successfully`);
-            setCookie(true);
+            setCookie(document.cookie);
         }
         else{
             alert('Internal Server Error')

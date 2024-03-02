@@ -5,18 +5,30 @@ import { useParams } from "react-router-dom";
 import { addToCart_apicall, removeFromCart_apicall } from "../components/Products";
 import { Qty } from "../components/Products";
 import { cartAtom } from "../store/userAtom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { URL } from "../App";
 
 function ProductLanding({}){
     const {productid} = useParams();
     const products = useRecoilValue(productAtom);
-    console.log(products)
-    const product = products.find((obj=>obj._id===productid))
-    console.log(product);
+    // console.log(products)
 
     const user = useRecoilValue(userAtom);
     const [cart,setCart] = useRecoilState(cartAtom)
-    const [inCart, setInCart] = useState(cart.includes(product._id))
+    const [inCart, setInCart] = useState(false)
+
+    const [product,setProduct] = useState({})
+
+    useEffect(()=>{
+        if(products){
+            setProduct(products.find((obj=>obj._id===productid)));
+            console.log(product);
+        }
+        if(cart){
+            setInCart(cart.includes(product._id));
+        }
+    },[cart,products])
 
     async function addToCart(){
         setCart(prev=>[...prev, product._id])
@@ -57,6 +69,59 @@ function ProductLanding({}){
                     </div>
                 </div>
             </div>
+            <Reviews product={product}/>
+        </div>
+    )
+}
+
+function Reviews({product}){
+    const user = useRecoilValue(userAtom);
+
+    async function submitReview({content}){
+        if(!user.username){
+            return alert("Login to write a review...")
+        }
+        try{
+            const res = axios.post(`${URL}/review/${product._id}`,{
+                "user" : user._id,
+                "review" : content
+            })
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
+
+    const [content,setContent] = useState('')
+
+    return(
+        <div className="m-20 text-lg">
+            <div className="text-2xl">
+                Comments -
+            </div>
+            <div className="m-10">
+                <div className="m-2 p-3 border-2 w-full border-black" contentEditable='true' onInput={(e)=>{
+                    setContent(e.target.innerText)
+                }}>
+                    
+                </div>
+                <button className="p-3 m-2 bg-slate-100 border-2 border-black"
+                onClick={()=>{
+                    submitReview(content)
+                    console.log(content)
+                }}
+                >
+                    Submit
+                </button>
+            </div>
+            {/* {product.reviews.map((review)=>{
+                return(
+                    <div>
+                        <div className="text-md">{review.user}</div>
+                        <div>{review.review}</div>
+                    </div>
+                )
+            })} */}
         </div>
     )
 }

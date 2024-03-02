@@ -14,6 +14,8 @@ import { userAtom, channelAtom, productAtom, cartAtom } from './store/userAtom'
 import axios from 'axios'
 import Loading from './pages/Loading'
 
+export const URL = "http://localhost:3000";
+
 function App() {
 
   const [userState, setUserState] = useRecoilState(userAtom);
@@ -21,15 +23,43 @@ function App() {
   const [productState, setProductState] = useRecoilState(productAtom);
   const [cart, setCart] = useRecoilState(cartAtom);
   const [loading, setLoading] = useState(true);
+  const [cookie,setCookie] = useRecoilState(cookieAtom);
 
   console.log('Initialization user');
 
   useEffect(() => {
     const getdata = async () => {
       try {
-        const cookie = document.cookie;
+        const channelresponse = await axios.get(`${URL}/channel`);
+        const channel = await channelresponse.data;
+        console.log(channel);
+        setChannelState(channel);
+
+        const productresponse = await axios.get(`${URL}/product`);
+        const product = await productresponse.data;
+        console.log(product);
+        setProductState(product);
+
+        setLoading(false);
+        console.log('data Updation complete');
+      }
+      catch (error) {
+        console.log(error);
+        alert(error);
+        setTimeout(()=>{
+          setLoading(false);
+        },1000)
+      }
+    }
+    getdata();
+  }, []);
+
+  useEffect(()=>{
+    const getUserData = async()=>{
+      try{
+        setLoading(true);
         const token = cookie.split('=')[1];
-        const userresponse = await axios.get(`http://localhost:3000/user`, {
+        const userresponse = await axios.get(`${URL}/user`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -41,29 +71,15 @@ function App() {
         if (user) {
           setCart(user.cart);
         }
-
-        const channelresponse = await axios.get(`http://localhost:3000/channel`);
-        const channel = await channelresponse.data;
-        console.log(channel);
-        setChannelState(channel);
-
-        const productresponse = await axios.get(`http://localhost:3000/product`);
-        const product = await productresponse.data;
-        console.log(product);
-        setProductState(product);
-
         setLoading(false);
-        console.log('data Updation complete');
       }
-      catch (error) {
-        console.log(error);
-        setTimeout(()=>{
-          setLoading(false);
-        },1000)
+      catch(e){
+        console.log(e);
+        setLoading(false);
       }
     }
-    getdata();
-  }, []);
+    getUserData();
+  },[cookie])
 
   return (
     <BrowserRouter>
