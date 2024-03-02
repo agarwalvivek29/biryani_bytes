@@ -1,8 +1,7 @@
 # biryani_bytes
-**Peer to Peer E-Commerce App + Product Customizer**
+**Peer to Peer E-Commerce App**
 
 ## Backend Setup
-### Environment Configuration
 - Create a `.env` file
     - MONGODB_CONNECTIONSTRING=<your_mongodb_string>
-    - HF_APIKEY=<your_huggingFace_ApiKey>
+    - JWT_SECRET=<any_string>
