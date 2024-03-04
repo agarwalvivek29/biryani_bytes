@@ -14,7 +14,7 @@ import { userAtom, channelAtom, productAtom, cartAtom } from './store/userAtom'
 import axios from 'axios'
 import Loading from './pages/Loading'
 
-export const URL = "https://biryani-bytes-backend.vercel.app";
+export const URL = "http://localhost:3000";
 
 function App() {
 

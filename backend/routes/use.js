@@ -124,9 +124,11 @@ router.post('/review/:productid',async(req,res)=>{
             "_id" : req.params.productid
         })
 
+        console.log(req.body,"hello babe");
+
         product.reviews.push({
-            review : req.body.review,
-            user : req.body.user
+            "review" : req.body.review,
+            "username" : req.body.username
         })
 
         console.log(product);

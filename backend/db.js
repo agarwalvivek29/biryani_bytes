@@ -10,10 +10,7 @@ const productSchema = new mongoose.Schema({
     "image" : String,
     "description" : String,
     "reviews" : [{
-        "user" : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : 'User'
-        },
+        "username" : String,
         "review" : String
     }],
     "likes" : {
